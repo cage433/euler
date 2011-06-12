@@ -18,6 +18,7 @@ get_another_prime:
   push rbx
   push rcx
   push r8
+  push r9
 
   mov r8, [NUM_PRIMES]
   xor rdx, rdx
@@ -27,14 +28,15 @@ get_another_prime:
   xor r8, r8
 
 .seeIfDivisibleByPrime:
-  mov rax, [PRIMES + r8 * 8]     ; push the current prime into rax 
+  mov r9, [PRIMES + r8 * 8]
+  mov rax, r9     ; push the current prime into rax 
   mul rax            ; square the prime
   cmp rax, rbx       ; If bigger than our candidate then our candidate must be prime
   jg .done
   
   xor rdx, rdx       ; zero rdx
   mov rax, rbx       ; divide prime candidate by next in list
-  div qword [PRIMES + r8 * 8]
+  div r9
   cmp rdx, 0          ; If remainder is zero then candidate is composite
   jz .loop
   inc r8
@@ -44,6 +46,7 @@ get_another_prime:
   inc qword [NUM_PRIMES]
   mov r8, [NUM_PRIMES]
   mov [PRIMES + r8 * 8 - 8], rbx
+  pop r9
   pop r8
   pop rcx
   pop rbx
