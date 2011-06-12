@@ -61,15 +61,35 @@ main:
   mov qword [PRIMES + 8], 3
   mov qword [NUM_PRIMES], 2
 
-  mov r9, 1000000
-  align 64
-loop:
+  mov r9, BIG_NUMBER       ; We will continue dividing this number by primes until we are left with one
+  mov r10, 0               ; The index of the prime we are dividing our number by
+  jmp loop
 
+next_prime:
+  inc r10
+loop:
+  cmp qword [NUM_PRIMES], r10
+  jg try_division
   call get_another_prime
-  dec r9
-  jnz loop
-  mov qword r8, [NUM_PRIMES]
-  mov rsi, [PRIMES + r8 * 8 - 8]
+
+
+try_division:
+  mov rax, r9
+  xor rdx, rdx
+  div qword [PRIMES + r10]
+  cmp rdx, 0
+  jnz next_prime
+  mov r9, rax
+  mov rax, [PRIMES + r10]
+  xor rdx, rdx
+  mul rax
+  cmp rax, r9
+  jg done
+  jmp try_division
+
+done:
+
+  mov rsi, r9
 
   push rbp
 	mov rbp,rsp
